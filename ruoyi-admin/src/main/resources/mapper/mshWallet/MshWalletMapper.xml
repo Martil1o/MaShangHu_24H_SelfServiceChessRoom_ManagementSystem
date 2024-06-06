@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mshWallet.mapper.MshWalletMapper">
+    
+    <resultMap type="MshWallet" id="MshWalletResult">
+        <result property="id"    column="id"    />
+        <result property="walletType"    column="wallet_type"    />
+        <result property="walletOwner"    column="wallet_owner"    />
+        <result property="walletBalance"    column="wallet_balance"    />
+        <result property="walletDeduct"    column="wallet_deduct"    />
+        <result property="walletIncome"    column="wallet_income"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMshWalletVo">
+        select id, wallet_type, wallet_owner, wallet_balance, wallet_deduct, wallet_income, update_time from msh_wallet
+    </sql>
+
+    <select id="selectMshWalletList" parameterType="MshWallet" resultMap="MshWalletResult">
+        <include refid="selectMshWalletVo"/>
+        <where>  
+            <if test="walletOwner != null "> and wallet_owner = #{walletOwner}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectMshWalletById" parameterType="Long" resultMap="MshWalletResult">
+        <include refid="selectMshWalletVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMshWallet" parameterType="MshWallet">
+        insert into msh_wallet
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="walletType != null">wallet_type,</if>
+            <if test="walletOwner != null">wallet_owner,</if>
+            <if test="walletBalance != null">wallet_balance,</if>
+            <if test="walletDeduct != null">wallet_deduct,</if>
+            <if test="walletIncome != null">wallet_income,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="walletType != null">#{walletType},</if>
+            <if test="walletOwner != null">#{walletOwner},</if>
+            <if test="walletBalance != null">#{walletBalance},</if>
+            <if test="walletDeduct != null">#{walletDeduct},</if>
+            <if test="walletIncome != null">#{walletIncome},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMshWallet" parameterType="MshWallet">
+        update msh_wallet
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="walletType != null">wallet_type = #{walletType},</if>
+            <if test="walletOwner != null">wallet_owner = #{walletOwner},</if>
+            <if test="walletBalance != null">wallet_balance = #{walletBalance},</if>
+            <if test="walletDeduct != null">wallet_deduct = #{walletDeduct},</if>
+            <if test="walletIncome != null">wallet_income = #{walletIncome},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMshWalletById" parameterType="Long">
+        delete from msh_wallet where id = #{id}
+    </delete>
+
+    <delete id="deleteMshWalletByIds" parameterType="String">
+        delete from msh_wallet where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

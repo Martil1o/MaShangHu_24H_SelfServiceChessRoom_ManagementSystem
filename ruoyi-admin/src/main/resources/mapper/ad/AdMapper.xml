@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ad.mapper.AdMapper">
+
+    <resultMap type="Ad" id="AdResult">
+        <result property="id"    column="id"    />
+        <result property="adName"    column="ad_name"    />
+        <result property="adType"    column="ad_type"    />
+        <result property="adPosition"    column="ad_position"    />
+        <result property="adStartTime"    column="ad_start_time"    />
+        <result property="adEndTime"    column="ad_end_time"    />
+        <result property="adUrl"    column="ad_url"    />
+        <result property="adLink"    column="ad_link"    />
+        <result property="adStatus"    column="ad_status"    />
+        <result property="createdUserId"    column="created_user_id"    />
+    </resultMap>
+
+    <sql id="selectAdVo">
+        select id, ad_name, ad_type, ad_position, ad_start_time, ad_end_time, ad_url, ad_link, ad_status, created_user_id from msh_ad
+    </sql>
+
+    <select id="selectAdList" parameterType="Ad" resultMap="AdResult">
+        <include refid="selectAdVo"/>
+        <where>
+            <if test="adName != null  and adName != ''"> and ad_name like concat('%', #{adName}, '%')</if>
+            <if test="adType != null  and adType != ''"> and ad_type = #{adType}</if>
+        </where>
+    </select>
+
+    <select id="selectAdById" parameterType="Long" resultMap="AdResult">
+        <include refid="selectAdVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAd" parameterType="Ad" useGeneratedKeys="true" keyProperty="id">
+        insert into msh_ad
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="adName != null and adName != ''">ad_name,</if>
+            <if test="adType != null and adType != ''">ad_type,</if>
+            <if test="adPosition != null and adPosition != ''">ad_position,</if>
+            <if test="adStartTime != null">ad_start_time,</if>
+            <if test="adEndTime != null">ad_end_time,</if>
+            <if test="adUrl != null">ad_url,</if>
+            <if test="adLink != null">ad_link,</if>
+            <if test="adStatus != null">ad_status,</if>
+            <if test="createdUserId != null">created_user_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="adName != null and adName != ''">#{adName},</if>
+            <if test="adType != null and adType != ''">#{adType},</if>
+            <if test="adPosition != null and adPosition != ''">#{adPosition},</if>
+            <if test="adStartTime != null">#{adStartTime},</if>
+            <if test="adEndTime != null">#{adEndTime},</if>
+            <if test="adUrl != null">#{adUrl},</if>
+            <if test="adLink != null">#{adLink},</if>
+            <if test="adStatus != null">#{adStatus},</if>
+            <if test="createdUserId != null">#{createdUserId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAd" parameterType="Ad">
+        update msh_ad
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="adName != null and adName != ''">ad_name = #{adName},</if>
+            <if test="adType != null and adType != ''">ad_type = #{adType},</if>
+            <if test="adPosition != null and adPosition != ''">ad_position = #{adPosition},</if>
+            <if test="adStartTime != null">ad_start_time = #{adStartTime},</if>
+            <if test="adEndTime != null">ad_end_time = #{adEndTime},</if>
+            <if test="adUrl != null">ad_url = #{adUrl},</if>
+            <if test="adLink != null">ad_link = #{adLink},</if>
+            <if test="adStatus != null">ad_status = #{adStatus},</if>
+            <if test="createdUserId != null">created_user_id = #{createdUserId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAdById" parameterType="Long">
+        delete from msh_ad where id = #{id}
+    </delete>
+
+    <delete id="deleteAdByIds" parameterType="String">
+        delete from msh_ad where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
