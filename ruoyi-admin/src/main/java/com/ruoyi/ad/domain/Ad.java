@@ -9,9 +9,9 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 广告管理对象 msh_ad
- *
+ * 
  * @author ruoyi
- * @date 2024-06-05
+ * @date 2024-06-06
  */
 public class Ad extends BaseEntity
 {
@@ -54,96 +54,96 @@ public class Ad extends BaseEntity
     @Excel(name = "广告状态")
     private Long adStatus;
 
-    /** 广告创建者id */
-    private String createdUserId;
+    /** 广告创建者 */
+    private Long createdUserId;
 
-    public void setId(Long id)
+    public void setId(Long id) 
     {
         this.id = id;
     }
 
-    public Long getId()
+    public Long getId() 
     {
         return id;
     }
-    public void setAdName(String adName)
+    public void setAdName(String adName) 
     {
         this.adName = adName;
     }
 
-    public String getAdName()
+    public String getAdName() 
     {
         return adName;
     }
-    public void setAdType(String adType)
+    public void setAdType(String adType) 
     {
         this.adType = adType;
     }
 
-    public String getAdType()
+    public String getAdType() 
     {
         return adType;
     }
-    public void setAdPosition(String adPosition)
+    public void setAdPosition(String adPosition) 
     {
         this.adPosition = adPosition;
     }
 
-    public String getAdPosition()
+    public String getAdPosition() 
     {
         return adPosition;
     }
-    public void setAdStartTime(Date adStartTime)
+    public void setAdStartTime(Date adStartTime) 
     {
         this.adStartTime = adStartTime;
     }
 
-    public Date getAdStartTime()
+    public Date getAdStartTime() 
     {
         return adStartTime;
     }
-    public void setAdEndTime(Date adEndTime)
+    public void setAdEndTime(Date adEndTime) 
     {
         this.adEndTime = adEndTime;
     }
 
-    public Date getAdEndTime()
+    public Date getAdEndTime() 
     {
         return adEndTime;
     }
-    public void setAdUrl(String adUrl)
+    public void setAdUrl(String adUrl) 
     {
         this.adUrl = adUrl;
     }
 
-    public String getAdUrl()
+    public String getAdUrl() 
     {
         return adUrl;
     }
-    public void setAdLink(String adLink)
+    public void setAdLink(String adLink) 
     {
         this.adLink = adLink;
     }
 
-    public String getAdLink()
+    public String getAdLink() 
     {
         return adLink;
     }
-    public void setAdStatus(Long adStatus)
+    public void setAdStatus(Long adStatus) 
     {
         this.adStatus = adStatus;
     }
 
-    public Long getAdStatus()
+    public Long getAdStatus() 
     {
         return adStatus;
     }
-    public void setCreatedUserId(String  createdUserId)
+    public void setCreatedUserId(Long createdUserId) 
     {
         this.createdUserId = createdUserId;
     }
 
-    public String getCreatedUserId()
+    public Long getCreatedUserId() 
     {
         return createdUserId;
     }
@@ -151,16 +151,16 @@ public class Ad extends BaseEntity
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("adName", getAdName())
-                .append("adType", getAdType())
-                .append("adPosition", getAdPosition())
-                .append("adStartTime", getAdStartTime())
-                .append("adEndTime", getAdEndTime())
-                .append("adUrl", getAdUrl())
-                .append("adLink", getAdLink())
-                .append("adStatus", getAdStatus())
-                .append("createdUserId", getCreatedUserId())
-                .toString();
+            .append("id", getId())
+            .append("adName", getAdName())
+            .append("adType", getAdType())
+            .append("adPosition", getAdPosition())
+            .append("adStartTime", getAdStartTime())
+            .append("adEndTime", getAdEndTime())
+            .append("adUrl", getAdUrl())
+            .append("adLink", getAdLink())
+            .append("adStatus", getAdStatus())
+            .append("createdUserId", getCreatedUserId())
+            .toString();
     }
 }

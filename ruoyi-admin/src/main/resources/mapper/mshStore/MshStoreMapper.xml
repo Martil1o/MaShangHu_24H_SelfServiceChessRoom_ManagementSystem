@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mshStore.mapper.MshStoreMapper">
+    
+    <resultMap type="MshStore" id="MshStoreResult">
+        <result property="id"    column="id"    />
+        <result property="storeName"    column="store_name"    />
+        <result property="storeAddress"    column="store_address"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="createdUserId"    column="created_user_id"    />
+    </resultMap>
+
+    <resultMap id="MshStoreMshUserStoreResult" type="MshStore" extends="MshStoreResult">
+        <collection property="mshUserStoreList" notNullColumn="sub_id" javaType="java.util.List" resultMap="MshUserStoreResult" />
+    </resultMap>
+
+    <resultMap type="MshUserStore" id="MshUserStoreResult">
+        <result property="id"    column="sub_id"    />
+        <result property="userId"    column="sub_user_id"    />
+        <result property="storeId"    column="sub_store_id"    />
+    </resultMap>
+
+    <sql id="selectMshStoreVo">
+        select id, store_name, store_address, store_type, created_user_id from msh_store
+    </sql>
+
+    <select id="selectMshStoreList" parameterType="MshStore" resultMap="MshStoreResult">
+        <include refid="selectMshStoreVo"/>
+        <where>  
+            <if test="storeName != null  and storeName != ''"> and store_name like concat('%', #{storeName}, '%')</if>
+            <if test="storeAddress != null  and storeAddress != ''"> and store_address like concat('%', #{storeAddress}, '%')</if>
+            <if test="storeType != null "> and store_type = #{storeType}</if>
+        </where>
+    </select>
+    
+    <select id="selectMshStoreById" parameterType="Long" resultMap="MshStoreMshUserStoreResult">
+        select a.id, a.store_name, a.store_address, a.store_type, a.created_user_id,
+ b.id as sub_id, b.user_id as sub_user_id, b.store_id as sub_store_id
+        from msh_store a
+        left join msh_user_store b on b.store_id = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertMshStore" parameterType="MshStore" useGeneratedKeys="true" keyProperty="id">
+        insert into msh_store
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeName != null and storeName != ''">store_name,</if>
+            <if test="storeAddress != null and storeAddress != ''">store_address,</if>
+            <if test="storeType != null">store_type,</if>
+            <if test="createdUserId != null">created_user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeName != null and storeName != ''">#{storeName},</if>
+            <if test="storeAddress != null and storeAddress != ''">#{storeAddress},</if>
+            <if test="storeType != null">#{storeType},</if>
+            <if test="createdUserId != null">#{createdUserId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMshStore" parameterType="MshStore">
+        update msh_store
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeName != null and storeName != ''">store_name = #{storeName},</if>
+            <if test="storeAddress != null and storeAddress != ''">store_address = #{storeAddress},</if>
+            <if test="storeType != null">store_type = #{storeType},</if>
+            <if test="createdUserId != null">created_user_id = #{createdUserId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMshStoreById" parameterType="Long">
+        delete from msh_store where id = #{id}
+    </delete>
+
+    <delete id="deleteMshStoreByIds" parameterType="String">
+        delete from msh_store where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteMshUserStoreByStoreIds" parameterType="String">
+        delete from msh_user_store where store_id in 
+        <foreach item="storeId" collection="array" open="(" separator="," close=")">
+            #{storeId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMshUserStoreByStoreId" parameterType="Long">
+        delete from msh_user_store where store_id = #{storeId}
+    </delete>
+
+    <insert id="batchMshUserStore">
+        insert into msh_user_store( id, user_id, store_id) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.userId}, #{item.storeId})
+        </foreach>
+    </insert>
+</mapper>

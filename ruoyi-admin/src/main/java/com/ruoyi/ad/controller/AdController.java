@@ -23,9 +23,9 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 广告管理Controller
- *
+ * 
  * @author ruoyi
- * @date 2024-06-05
+ * @date 2024-06-06
  */
 @RestController
 @RequestMapping("/ad/ad")
@@ -96,7 +96,7 @@ public class AdController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('ad:ad:remove')")
     @Log(title = "广告管理", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
+	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(adService.deleteAdByIds(ids));
