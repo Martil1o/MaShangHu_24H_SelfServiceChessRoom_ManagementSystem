@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mshRoom.mapper.MshRoomMapper">
+    
+    <resultMap type="MshRoom" id="MshRoomResult">
+        <result property="id"    column="id"    />
+        <result property="roomName"    column="room_name"    />
+        <result property="roomDescription"    column="room_description"    />
+        <result property="roomPrice"    column="room_price"    />
+        <result property="storeName"    column="store_name"    />
+        <result property="roomStatus"    column="room_status"    />
+    </resultMap>
+
+    <resultMap id="MshRoomMshStoreRoomResult" type="MshRoom" extends="MshRoomResult">
+        <collection property="mshStoreRoomList" notNullColumn="sub_id" javaType="java.util.List" resultMap="MshStoreRoomResult" />
+    </resultMap>
+
+    <resultMap type="MshStoreRoom" id="MshStoreRoomResult">
+        <result property="id"    column="sub_id"    />
+        <result property="storeId"    column="sub_store_id"    />
+        <result property="roomId"    column="sub_room_id"    />
+    </resultMap>
+
+    <sql id="selectMshRoomVo">
+        select id, room_name, room_description, room_price, store_name, room_status from msh_room
+    </sql>
+
+    <select id="selectMshRoomList" parameterType="MshRoom" resultMap="MshRoomResult">
+        <include refid="selectMshRoomVo"/>
+        <where>  
+            <if test="roomName != null  and roomName != ''"> and room_name like concat('%', #{roomName}, '%')</if>
+            <if test="storeName != null  and storeName != ''"> and store_name like concat('%', #{storeName}, '%')</if>
+            <if test="roomStatus != null "> and room_status = #{roomStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectMshRoomById" parameterType="Long" resultMap="MshRoomMshStoreRoomResult">
+        select a.id, a.room_name, a.room_description, a.room_price, a.store_name, a.room_status,
+ b.id as sub_id, b.store_id as sub_store_id, b.room_id as sub_room_id
+        from msh_room a
+        left join msh_store_room b on b.room_id = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertMshRoom" parameterType="MshRoom" useGeneratedKeys="true" keyProperty="id">
+        insert into msh_room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roomName != null">room_name,</if>
+            <if test="roomDescription != null">room_description,</if>
+            <if test="roomPrice != null">room_price,</if>
+            <if test="storeName != null and storeName != ''">store_name,</if>
+            <if test="roomStatus != null">room_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roomName != null">#{roomName},</if>
+            <if test="roomDescription != null">#{roomDescription},</if>
+            <if test="roomPrice != null">#{roomPrice},</if>
+            <if test="storeName != null and storeName != ''">#{storeName},</if>
+            <if test="roomStatus != null">#{roomStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMshRoom" parameterType="MshRoom">
+        update msh_room
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomName != null">room_name = #{roomName},</if>
+            <if test="roomDescription != null">room_description = #{roomDescription},</if>
+            <if test="roomPrice != null">room_price = #{roomPrice},</if>
+            <if test="storeName != null and storeName != ''">store_name = #{storeName},</if>
+            <if test="roomStatus != null">room_status = #{roomStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMshRoomById" parameterType="Long">
+        delete from msh_room where id = #{id}
+    </delete>
+
+    <delete id="deleteMshRoomByIds" parameterType="String">
+        delete from msh_room where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteMshStoreRoomByRoomIds" parameterType="String">
+        delete from msh_store_room where room_id in 
+        <foreach item="roomId" collection="array" open="(" separator="," close=")">
+            #{roomId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMshStoreRoomByRoomId" parameterType="Long">
+        delete from msh_store_room where room_id = #{roomId}
+    </delete>
+
+    <insert id="batchMshStoreRoom">
+        insert into msh_store_room( id, store_id, room_id) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.storeId}, #{item.roomId})
+        </foreach>
+    </insert>
+</mapper>

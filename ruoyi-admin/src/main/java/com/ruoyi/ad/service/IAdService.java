@@ -5,15 +5,15 @@ import com.ruoyi.ad.domain.Ad;
 
 /**
  * 广告管理Service接口
- *
+ * 
  * @author ruoyi
- * @date 2024-06-05
+ * @date 2024-06-06
  */
-public interface IAdService
+public interface IAdService 
 {
     /**
      * 查询广告管理
-     *
+     * 
      * @param id 广告管理主键
      * @return 广告管理
      */
@@ -21,7 +21,7 @@ public interface IAdService
 
     /**
      * 查询广告管理列表
-     *
+     * 
      * @param ad 广告管理
      * @return 广告管理集合
      */
@@ -29,7 +29,7 @@ public interface IAdService
 
     /**
      * 新增广告管理
-     *
+     * 
      * @param ad 广告管理
      * @return 结果
      */
@@ -37,7 +37,7 @@ public interface IAdService
 
     /**
      * 修改广告管理
-     *
+     * 
      * @param ad 广告管理
      * @return 结果
      */
@@ -45,7 +45,7 @@ public interface IAdService
 
     /**
      * 批量删除广告管理
-     *
+     * 
      * @param ids 需要删除的广告管理主键集合
      * @return 结果
      */
@@ -53,7 +53,7 @@ public interface IAdService
 
     /**
      * 删除广告管理信息
-     *
+     * 
      * @param id 广告管理主键
      * @return 结果
      */

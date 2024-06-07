@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.ad.mapper.AdMapper">
-
+    
     <resultMap type="Ad" id="AdResult">
         <result property="id"    column="id"    />
         <result property="adName"    column="ad_name"    />
@@ -23,17 +23,20 @@
 
     <select id="selectAdList" parameterType="Ad" resultMap="AdResult">
         <include refid="selectAdVo"/>
-        <where>
+        <where>  
             <if test="adName != null  and adName != ''"> and ad_name like concat('%', #{adName}, '%')</if>
             <if test="adType != null  and adType != ''"> and ad_type = #{adType}</if>
+            <if test="adStartTime != null "> and ad_start_time = #{adStartTime}</if>
+            <if test="adEndTime != null "> and ad_end_time = #{adEndTime}</if>
+            <if test="adStatus != null "> and ad_status = #{adStatus}</if>
         </where>
     </select>
-
+    
     <select id="selectAdById" parameterType="Long" resultMap="AdResult">
         <include refid="selectAdVo"/>
         where id = #{id}
     </select>
-
+        
     <insert id="insertAd" parameterType="Ad" useGeneratedKeys="true" keyProperty="id">
         insert into msh_ad
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -46,7 +49,7 @@
             <if test="adLink != null">ad_link,</if>
             <if test="adStatus != null">ad_status,</if>
             <if test="createdUserId != null">created_user_id,</if>
-        </trim>
+         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="adName != null and adName != ''">#{adName},</if>
             <if test="adType != null and adType != ''">#{adType},</if>
@@ -57,7 +60,7 @@
             <if test="adLink != null">#{adLink},</if>
             <if test="adStatus != null">#{adStatus},</if>
             <if test="createdUserId != null">#{createdUserId},</if>
-        </trim>
+         </trim>
     </insert>
 
     <update id="updateAd" parameterType="Ad">
@@ -81,7 +84,7 @@
     </delete>
 
     <delete id="deleteAdByIds" parameterType="String">
-        delete from msh_ad where id in
+        delete from msh_ad where id in 
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
