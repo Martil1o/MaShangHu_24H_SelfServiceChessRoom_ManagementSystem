@@ -110,7 +110,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -131,6 +131,18 @@
         <el-form-item label="房间单价/时" prop="roomPrice">
           <el-input v-model="form.roomPrice" placeholder="请输入房间单价/时" />
         </el-form-item>
+        <el-form-item label="所属店铺">
+          <template>
+            <el-select v-model="store" style="width: 240px">
+              <el-option
+                v-for="mshStore in mshStoreList"
+                :key="mshStore.id"
+                :label="mshStore.storeName"
+                :value="[mshStore.storeName,mshStore.id]"
+              />
+            </el-select>
+          </template>
+        </el-form-item>
         <el-form-item label="房间状态" prop="roomStatus">
           <el-radio-group v-model="form.roomStatus">
             <el-radio
@@ -140,32 +152,6 @@
             >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-divider content-position="center">关联店铺</el-divider>
-        <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddMshStoreRoom">添加</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteMshStoreRoom">删除</el-button>
-          </el-col>
-        </el-row>
-        <el-table :data="mshStoreRoomList" :row-class-name="rowMshStoreRoomIndex" @selection-change="handleMshStoreRoomSelectionChange" ref="mshStoreRoom">
-          <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="序号" align="center" prop="index" width="50"/>
-          <el-table-column label="店铺ID" prop="storeId" width="150">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.storeId" placeholder="请选择房间所属店铺" width="300">
-                <el-option
-                  v-for="store in mshStoreList"
-                  :key="store.id"
-                  :label="store.storeName"
-                  :value="parseInt(store.id)"
-                ></el-option>
-              </el-select>
-              <!-- <el-input v-model="scope.row.storeId" placeholder="请输入店铺ID" /> -->
-            </template>
-          </el-table-column>
-        </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -206,6 +192,7 @@ export default {
       mshStoreRoomList: [],
       // 弹出层标题
       title: "",
+      store:[],
       // 是否显示弹出层
       open: false,
       // 查询参数
@@ -250,7 +237,6 @@ export default {
       this.loading = true;
       listMshStore(this.queryParams).then(response => {
         this.mshStoreList = response.rows;
-        console.log(this.mshStoreList);
         this.total = response.total;
         this.loading = false;
       });
@@ -270,7 +256,7 @@ export default {
         storeName: null,
         roomStatus: null
       };
-      this.mshStoreRoomList = [];
+      this.mshStoreRoomList =[];
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -310,14 +296,8 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          this.form.mshStoreRoomList = this.mshStoreRoomList;
-          console.log(this.mshStoreRoomList.storeId);
-          for (let index = 0; index < this.mshStoreList.length; index++) {
-            if(this.mshStoreList[index].id === this.form.mshStoreRoomList.storeId){
-              this.form.storeName = this.mshStoreList[index].name;
-              console.log(this.form.storeName);
-            }            
-          }
+          this.form.storeName = this.store[0]
+          this.form.mshStoreRoomList=[{id:null,storeId:this.store[1],roomId:null}]
           if (this.form.id != null) {
             updateMshRoom(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");

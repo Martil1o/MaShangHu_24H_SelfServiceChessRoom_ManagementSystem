@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mshOrder.mapper.MshOrderMapper">
+    
+    <resultMap type="MshOrder" id="MshOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="orderDuration"    column="order_duration"    />
+        <result property="orderEarned"    column="order_earned"    />
+        <result property="orderDebuct"    column="order_debuct"    />
+        <result property="orderSource"    column="order_source"    />
+        <result property="roomId"    column="room_id"    />
+        <result property="createdTime"    column="created_time"    />
+    </resultMap>
+
+    <sql id="selectMshOrderVo">
+        select msh_order.id, order_type, order_duration, order_earned, order_debuct, order_source, room_id, created_time from msh_order
+    </sql>
+
+    <select id="selectMshOrderList" parameterType="MshOrder" resultMap="MshOrderResult">
+        <include refid="selectMshOrderVo"/>
+        <where>  
+            <if test="orderType != null "> and order_type = #{orderType}</if>
+            <if test="orderSource != null "> and order_source = #{orderSource}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectMshOrderById" parameterType="Long" resultMap="MshOrderResult">
+        <include refid="selectMshOrderVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectMshOrderByLoginUserId" resultType="com.ruoyi.mshOrder.domain.MshOrder"
+            parameterType="com.ruoyi.mshOrder.domain.Vo.MshOrderVo">
+        <include refid="selectMshOrderVo"/>
+            left join msh_store_order mso on msh_order.id = mso.order_id
+            left join msh_store ms on mso.store_id = ms.id
+            left join msh_user_store mus on mus.store_id = ms.id
+            where mus.user_id = 2
+    </select>
+
+    <insert id="insertMshOrder" parameterType="MshOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into msh_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderType != null">order_type,</if>
+            <if test="orderDuration != null">order_duration,</if>
+            <if test="orderEarned != null">order_earned,</if>
+            <if test="orderDebuct != null">order_debuct,</if>
+            <if test="orderSource != null">order_source,</if>
+            <if test="roomId != null">room_id,</if>
+            <if test="createdTime != null">created_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderType != null">#{orderType},</if>
+            <if test="orderDuration != null">#{orderDuration},</if>
+            <if test="orderEarned != null">#{orderEarned},</if>
+            <if test="orderDebuct != null">#{orderDebuct},</if>
+            <if test="orderSource != null">#{orderSource},</if>
+            <if test="roomId != null">#{roomId},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMshOrder" parameterType="MshOrder">
+        update msh_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="orderDuration != null">order_duration = #{orderDuration},</if>
+            <if test="orderEarned != null">order_earned = #{orderEarned},</if>
+            <if test="orderDebuct != null">order_debuct = #{orderDebuct},</if>
+            <if test="orderSource != null">order_source = #{orderSource},</if>
+            <if test="roomId != null">room_id = #{roomId},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMshOrderById" parameterType="Long">
+        delete from msh_order where id = #{id}
+    </delete>
+
+    <delete id="deleteMshOrderByIds" parameterType="String">
+        delete from msh_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

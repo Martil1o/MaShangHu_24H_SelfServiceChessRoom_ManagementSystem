@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.finance.mapper.MshFinanceMapper">
+    
+    <resultMap type="MshFinance" id="MshFinanceResult">
+        <result property="id"    column="id"    />
+        <result property="financeAmount"    column="finance_amount"    />
+        <result property="financeBankName"    column="finance_bank_name"    />
+        <result property="financeBankAccount"    column="finance_bank_account"    />
+        <result property="financeBankOwner"    column="finance_bank_owner"    />
+        <result property="financeType"    column="finance_type"    />
+        <result property="financeStatus"    column="finance_status"    />
+        <result property="financeCreatedTime"    column="finance_created_time"    />
+        <result property="financeUpdatedTime"    column="finance_updated_time"    />
+    </resultMap>
+
+    <resultMap id="MshFinanceMshUserFinanceResult" type="MshFinance" extends="MshFinanceResult">
+        <collection property="mshUserFinanceList" notNullColumn="sub_id" javaType="java.util.List" resultMap="MshUserFinanceResult" />
+    </resultMap>
+
+    <resultMap type="MshUserFinance" id="MshUserFinanceResult">
+        <result property="id"    column="sub_id"    />
+        <result property="userId"    column="sub_user_id"    />
+        <result property="financeId"    column="sub_finance_id"    />
+    </resultMap>
+
+    <sql id="selectMshFinanceVo">
+        select id, finance_amount, finance_bank_name, finance_bank_account, finance_bank_owner, finance_type, finance_status, finance_created_time, finance_updated_time from msh_finance
+    </sql>
+
+    <select id="selectMshFinanceList" parameterType="MshFinance" resultMap="MshFinanceResult">
+        <include refid="selectMshFinanceVo"/>
+        <where>  
+            <if test="financeStatus != null "> and finance_status = #{financeStatus}</if>
+            <if test="financeCreatedTime != null "> and finance_created_time = #{financeCreatedTime}</if>
+            <if test="financeUpdatedTime != null "> and finance_updated_time = #{financeUpdatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectMshFinanceById" parameterType="Long" resultMap="MshFinanceMshUserFinanceResult">
+        select a.id, a.finance_amount, a.finance_bank_name, a.finance_bank_account, a.finance_bank_owner, a.finance_type, a.finance_status, a.finance_created_time, a.finance_updated_time,
+ b.id as sub_id, b.user_id as sub_user_id, b.finance_id as sub_finance_id
+        from msh_finance a
+        left join msh_user_finance b on b.finance_id = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertMshFinance" parameterType="MshFinance" useGeneratedKeys="true" keyProperty="id">
+        insert into msh_finance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="financeAmount != null">finance_amount,</if>
+            <if test="financeBankName != null">finance_bank_name,</if>
+            <if test="financeBankAccount != null">finance_bank_account,</if>
+            <if test="financeBankOwner != null">finance_bank_owner,</if>
+            <if test="financeType != null">finance_type,</if>
+            <if test="financeStatus != null">finance_status,</if>
+            <if test="financeCreatedTime != null">finance_created_time,</if>
+            <if test="financeUpdatedTime != null">finance_updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="financeAmount != null">#{financeAmount},</if>
+            <if test="financeBankName != null">#{financeBankName},</if>
+            <if test="financeBankAccount != null">#{financeBankAccount},</if>
+            <if test="financeBankOwner != null">#{financeBankOwner},</if>
+            <if test="financeType != null">#{financeType},</if>
+            <if test="financeStatus != null">#{financeStatus},</if>
+            <if test="financeCreatedTime != null">#{financeCreatedTime},</if>
+            <if test="financeUpdatedTime != null">#{financeUpdatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMshFinance" parameterType="MshFinance">
+        update msh_finance
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="financeAmount != null">finance_amount = #{financeAmount},</if>
+            <if test="financeBankName != null">finance_bank_name = #{financeBankName},</if>
+            <if test="financeBankAccount != null">finance_bank_account = #{financeBankAccount},</if>
+            <if test="financeBankOwner != null">finance_bank_owner = #{financeBankOwner},</if>
+            <if test="financeType != null">finance_type = #{financeType},</if>
+            <if test="financeStatus != null">finance_status = #{financeStatus},</if>
+            <if test="financeCreatedTime != null">finance_created_time = #{financeCreatedTime},</if>
+            <if test="financeUpdatedTime != null">finance_updated_time = #{financeUpdatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMshFinanceById" parameterType="Long">
+        delete from msh_finance where id = #{id}
+    </delete>
+
+    <delete id="deleteMshFinanceByIds" parameterType="String">
+        delete from msh_finance where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteMshUserFinanceByFinanceIds" parameterType="String">
+        delete from msh_user_finance where finance_id in 
+        <foreach item="financeId" collection="array" open="(" separator="," close=")">
+            #{financeId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMshUserFinanceByFinanceId" parameterType="Long">
+        delete from msh_user_finance where finance_id = #{financeId}
+    </delete>
+
+    <insert id="batchMshUserFinance">
+        insert into msh_user_finance( id, user_id, finance_id) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.userId}, #{item.financeId})
+        </foreach>
+    </insert>
+</mapper>
