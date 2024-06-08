@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mshInformation.mapper.MshCheckInformationMapper">
+
+    <resultMap type="MshCheckInformation" id="MshCheckInformationResult">
+        <result property="id"    column="id"    />
+        <result property="checkType"    column="check_type"    />
+        <result property="checkInfor"    column="check_infor"    />
+        <result property="checkStatus"    column="check_status"    />
+    </resultMap>
+
+    <sql id="selectMshCheckInformationVo">
+        select id, check_type, check_infor, check_status from msh_check_information
+    </sql>
+
+    <select id="selectMshCheckInformationList" parameterType="MshCheckInformation" resultMap="MshCheckInformationResult">
+        <include refid="selectMshCheckInformationVo"/>
+        <where>
+            <if test="checkStatus != null "> and check_status = #{checkStatus}</if>
+            and check_type = 0
+        </where>
+
+    </select>
+
+    <select id="selectMshCheckInformationById" parameterType="Long" resultMap="MshCheckInformationResult">
+        <include refid="selectMshCheckInformationVo"/>
+        where id = #{id}
+        and check_type = 0
+    </select>
+
+    <insert id="insertMshCheckInformation" parameterType="MshCheckInformation" useGeneratedKeys="true" keyProperty="id">
+        insert into msh_check_information
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="checkType != null">check_type,</if>
+            <if test="checkInfor != null">check_infor,</if>
+            <if test="checkStatus != null">check_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="checkType != null">#{checkType},</if>
+            <if test="checkInfor != null">#{checkInfor},</if>
+            <if test="checkStatus != null">#{checkStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMshCheckInformation" parameterType="MshCheckInformation">
+        update msh_check_information
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="checkType != null">check_type = #{checkType},</if>
+            <if test="checkInfor != null">check_infor = #{checkInfor},</if>
+            <if test="checkStatus != null">check_status = #{checkStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMshCheckInformationById" parameterType="Long">
+        delete from msh_check_information where id = #{id}
+    </delete>
+
+    <delete id="deleteMshCheckInformationByIds" parameterType="String">
+        delete from msh_check_information where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

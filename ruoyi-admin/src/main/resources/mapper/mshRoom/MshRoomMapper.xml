@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectMshRoomList" parameterType="MshRoom" resultMap="MshRoomResult">
         <include refid="selectMshRoomVo"/>
-        <where>  
+        <where>
             <if test="roomName != null  and roomName != ''"> and room_name like concat('%', #{roomName}, '%')</if>
             <if test="storeName != null  and storeName != ''"> and store_name like concat('%', #{storeName}, '%')</if>
             <if test="roomStatus != null "> and room_status = #{roomStatus}</if>
@@ -57,7 +57,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="roomName != null">#{roomName},</if>
             <if test="roomDescription != null">#{roomDescription},</if>
             <if test="roomPrice != null">#{roomPrice},</if>
-            <if test="storeName != null and storeName != ''">#{storeName},</if>
+            <if test="storeName != null and storeName != ''">#{storeName},
+            </if>
             <if test="roomStatus != null">#{roomStatus},</if>
          </trim>
     </insert>
