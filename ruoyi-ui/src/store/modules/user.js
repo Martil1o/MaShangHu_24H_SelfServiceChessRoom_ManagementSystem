@@ -8,7 +8,8 @@ const user = {
     name: '',
     avatar: '',
     roles: [],
-    permissions: []
+    permissions: [],
+    roleId:0
   },
 
   mutations: {
@@ -29,6 +30,9 @@ const user = {
     },
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
+    },
+    SET_ROLEID: (state, roleId) => {
+      state.roleId = roleId
     }
   },
 
@@ -64,6 +68,7 @@ const user = {
           }
           commit('SET_ID', user.userId)
           commit('SET_NAME', user.userName)
+          commit('SET_ROLEID', user.roleId)
           commit('SET_AVATAR', avatar)
           resolve(res)
         }).catch(error => {

@@ -19,12 +19,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select msh_order.id, order_type, order_duration, order_earned, order_debuct, order_source, room_id, created_time from msh_order
     </sql>
 
-    <select id="selectMshOrderList" parameterType="MshOrder" resultMap="MshOrderResult">
+    <select id="selectMshOrderList"  resultMap="MshOrderResult">
         <include refid="selectMshOrderVo"/>
+        left join msh_store_order mso on msh_order.id = mso.order_id
+        left join msh_store ms on mso.store_id = ms.id
+        left join msh_user_store mus on mus.store_id = ms.id
         <where>  
-            <if test="orderType != null "> and order_type = #{orderType}</if>
-            <if test="orderSource != null "> and order_source = #{orderSource}</if>
-            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="mshOrder.orderType != null "> and order_type = #{mshOrder.orderType}</if>
+            <if test="mshOrder.orderSource != null "> and order_source = #{mshOrder.orderSource}</if>
+            <if test="mshOrder.createdTime != null "> and created_time = #{mshOrder.createdTime}</if>
+            <if test="userId != null">and mus.user_id = #{userId}</if>
         </where>
     </select>
     

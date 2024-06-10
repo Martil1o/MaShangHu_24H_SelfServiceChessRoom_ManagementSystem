@@ -27,6 +27,11 @@ public class LoginUser implements UserDetails
     private Long deptId;
 
     /**
+     * 登录角色ID
+     */
+    private Long roleId;
+
+    /**
      * 用户唯一标识
      */
     private String token;
@@ -81,10 +86,11 @@ public class LoginUser implements UserDetails
         this.permissions = permissions;
     }
 
-    public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions)
+    public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions,Long roleId)
     {
         this.userId = userId;
         this.deptId = deptId;
+        this.roleId = roleId;
         this.user = user;
         this.permissions = permissions;
     }
@@ -262,5 +268,13 @@ public class LoginUser implements UserDetails
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
         return null;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 }

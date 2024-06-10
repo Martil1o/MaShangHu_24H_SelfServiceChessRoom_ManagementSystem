@@ -181,6 +181,7 @@ export default {
   data() {
     return {
       controlUserID:this.$store.state.user.id,
+      userRoleId:this.$store.state.user.roleId,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -240,7 +241,8 @@ export default {
     getList() {
       this.loading = true;
       listMshStore(this.queryParams).then(response => {
-        this.mshStoreList = response.rows;
+      console.log(this.userRoleId);
+      this.mshStoreList = response.rows;
         this.total = response.total;
         this.loading = false;
       });

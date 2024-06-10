@@ -3,7 +3,7 @@ package com.ruoyi.mshOrder.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ruoyi.mshOrder.domain.Vo.MshOrderVo;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,8 +44,13 @@ public class MshOrderController extends BaseController
     public TableDataInfo list(MshOrder mshOrder)
     {
         startPage();
-//        System.out.println(mshOrderVo.getLoginUserID());
-        List<MshOrder> list = mshOrderService.selectMshOrderList(mshOrder);
+        Long userId = getUserId();
+        System.out.println(userId);
+        if (userId == 1L|| userId ==2L ){
+            userId = null;
+        }
+        System.out.println("处理后的userid"+userId);
+        List<MshOrder> list = mshOrderService.selectMshOrderList(mshOrder,userId);
         return getDataTable(list);
     }
 
@@ -67,7 +72,8 @@ public class MshOrderController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, MshOrder mshOrder)
     {
-        List<MshOrder> list = mshOrderService.selectMshOrderList(mshOrder);
+        Long userId = getUserId();
+        List<MshOrder> list = mshOrderService.selectMshOrderList(mshOrder, userId);
         ExcelUtil<MshOrder> util = new ExcelUtil<MshOrder>(MshOrder.class);
         util.exportExcel(response, list, "订单明细数据");
     }

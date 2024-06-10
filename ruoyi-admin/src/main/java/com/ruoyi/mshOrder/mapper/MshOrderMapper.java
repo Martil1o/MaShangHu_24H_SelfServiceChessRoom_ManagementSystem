@@ -2,7 +2,7 @@ package com.ruoyi.mshOrder.mapper;
 
 import java.util.List;
 import com.ruoyi.mshOrder.domain.MshOrder;
-import com.ruoyi.mshOrder.domain.Vo.MshOrderVo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 订单明细Mapper接口
@@ -24,9 +24,10 @@ public interface MshOrderMapper
      * 查询订单明细列表
      *
      * @param mshOrder 订单明细
+     * @param userId
      * @return 订单明细集合
      */
-    public List<MshOrder> selectMshOrderList(MshOrder mshOrder);
+    public List<MshOrder> selectMshOrderList(@Param("mshOrder") MshOrder mshOrder,@Param("userId") Long userId);
 
     /**
      * 新增订单明细
