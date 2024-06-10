@@ -22,56 +22,18 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['mshWallet:wallet:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['mshWallet:wallet:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['mshWallet:wallet:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['mshWallet:wallet:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+    <el-row v-if="titleData != null">
+      <el-col :span="3"><div>总收入:{{ titleData.walletIncome }}</div></el-col>
+      <el-col :span="3"><div>服务费:{{ titleData.walletDeduct }}</div></el-col>
+      <el-col :span="3"><div>钱包余额:{{ titleData.walletBalance }}</div></el-col>
+      <el-col :span="3"><div>可提现余额:{{ titleData.walletBalance }}</div></el-col>
+      <el-col :span="2" :offset="8" ><el-button type="primary" @click="open=true;reset()" v-if= "userRoleId !== 1 && userRoleId !== 2" >提现</el-button></el-col>
+      <el-col :span="2"><el-button type="primary" @click="detailedopen=true">提现明细</el-button></el-col>
     </el-row>
-
-    <el-table v-loading="loading" :data="walletList" @selection-change="handleSelectionChange">
+    <div v-if="!loading">
+      <el-table v-loading="loading" :data="filteredTableData" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="" align="center" prop="id" />
+      <el-table-column label="钱包ID" align="center" prop="id" />
       <el-table-column label="钱包类型" align="center" prop="walletType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.msh_wallet_type" :value="scope.row.walletType"/>
@@ -86,7 +48,7 @@
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <!-- <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -103,9 +65,9 @@
             v-hasPermi="['mshWallet:wallet:remove']"
           >删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
-    
+    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -117,25 +79,102 @@
     <!-- 添加或修改店铺资产对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="提现金额" prop="financeAmount">
+          <el-input v-model="form.financeAmount" placeholder="请输入提现金额" />
+        </el-form-item>
+        <el-form-item label="提现银行名称" prop="financeBankName">
+          <el-input v-model="form.financeBankName" placeholder="请输入提现银行名称" />
+        </el-form-item>
+        <el-form-item label="提现银行账户" prop="financeBankAccount">
+          <el-input v-model="form.financeBankAccount" placeholder="请输入提现银行账户" />
+        </el-form-item>
+        <el-form-item label="提现银行户主名字" prop="financeBankOwner">
+          <el-input v-model="form.financeBankOwner" placeholder="请输入提现银行户主名子" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="提现明细" :visible.sync="detailedopen" width="1200px" append-to-body>
+      <el-table v-loading="loading" :data="financeList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="提现ID" align="center" prop="id" />
+        <el-table-column label="提现金额" align="center" prop="financeAmount" />
+        <el-table-column label="提现银行名称" align="center" prop="financeBankName" />
+        <el-table-column label="提现银行账户" align="center" prop="financeBankAccount" />
+        <el-table-column label="提现银行户主名字" align="center" prop="financeBankOwner" />
+        <el-table-column label="提现类型" align="center" prop="financeType">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.msh_finance_type" :value="scope.row.financeType"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="提现状态" align="center" prop="financeStatus">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.msh_finance_status" :value="scope.row.financeStatus"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" align="center" prop="financeCreatedTime" width="180">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.financeCreatedTime, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="更新时间" align="center" prop="financeUpdatedTime" width="180">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.financeUpdatedTime, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+            <template slot-scope="scope">
+              <div v-if= "userRoleId === 1 || userRoleId === 2">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-edit"
+                @click="dialogVisible=true;form=scope.row"
+                v-hasPermi="['finance:finance:edit']"
+              >处理</el-button>
+              </div>
+            </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogVisible"
+      title="Tips"
+      width="500"
+    >
+
+      <span>是否确认该笔订单已打款</span>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-form ref="form" :model="form">
+          </el-form>
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmPayment">
+            确认
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { listWallet, getWallet, delWallet, addWallet, updateWallet } from "@/api/mshWallet/wallet";
+import {addFinance, listFinance, updateFinance} from "@/api/finance/finance";
 
 export default {
   name: "Wallet",
-  dicts: ['msh_wallet_type'],
+  dicts: ['msh_wallet_type','msh_finance_type', 'msh_finance_status'],
   data() {
     return {
       // 遮罩层
       loading: true,
+      userRoleId:this.$store.state.user.roleId,
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -147,11 +186,15 @@ export default {
       // 总条数
       total: 0,
       // 店铺资产表格数据
-      walletList: [],
+      walletList:[],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+      detailedopen:false,
+      dialogVisible:false,
+      mshUserFinanceList: [],
+      financeList: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -174,6 +217,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getfinanceList()
   },
   methods: {
     /** 查询店铺资产列表 */
@@ -185,6 +229,15 @@ export default {
         this.loading = false;
       });
     },
+    getfinanceList() {
+      this.loading = true;
+      listFinance(this.queryParams).then(response => {
+        this.financeList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+
+      });
+    },
     // 取消按钮
     cancel() {
       this.open = false;
@@ -192,16 +245,18 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = {
-        id: null,
-        walletType: null,
-        walletOwner: null,
-        walletBalance: null,
-        walletDeduct: null,
-        walletIncome: null,
-        updateTime: null
+      this.form ={
+        financeAmount:null,
+        financeBankName:null,
+        financeBankAccount:null,
+        financeBankOwner:null,
+        financeType:0,
+        financeStatus:0,
+        financeCreatedTime:(new Date().toLocaleDateString()).replaceAll('/','-'),
+        financeUpdatedTime:(new Date().toLocaleDateString()).replaceAll('/','-'),
       };
-      this.resetForm("form");
+      this.mshUserFinanceList.index=0
+      this.mshUserFinanceList.userId=this.userRoleId
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -237,16 +292,18 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      console.log(this.$refs["form"])
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.mshUserFinanceList = this.mshUserFinanceList;
           if (this.form.id != null) {
-            updateWallet(this.form).then(response => {
+            updateFinance(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addWallet(this.form).then(response => {
+            addFinance(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -270,6 +327,44 @@ export default {
       this.download('mshWallet/wallet/export', {
         ...this.queryParams
       }, `wallet_${new Date().getTime()}.xlsx`)
+    },
+    handleAddMshUserFinance() {
+      let obj = {};
+      obj.userId = "";
+      this.mshUserFinanceList.push(obj);
+    },
+    rowMshUserFinanceIndex({ row, rowIndex }) {
+      row.index = rowIndex + 1;
+    },
+    handleMshUserFinanceSelectionChange(selection) {
+      this.checkedMshUserFinance = selection.map(item => item.index)
+    },
+    confirmPayment(){
+      this.form.financeStatus=1
+      this.form.financeUpdatedTime=(new Date().toLocaleDateString()).replaceAll('/','-')
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          this.form.mshUserFinanceList = this.mshUserFinanceList;
+            updateFinance(this.form).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+        }
+      });
+      this.dialogVisible=false
+
+    }
+  },
+  computed:{
+    filteredTableData:function(){
+      return this.walletList.filter(function(item) {
+        return item.walletType == 1
+      });
+    },
+    titleData:function(){
+      const vmid = this.userRoleId==2 || this.userRoleId==1?2:0
+      return this.walletList.find(item => item.walletType == vmid)
     }
   }
 };
