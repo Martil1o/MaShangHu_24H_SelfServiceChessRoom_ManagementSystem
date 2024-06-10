@@ -34,38 +34,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['finance:finance:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['finance:finance:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['finance:finance:remove']"
-        >删除</el-button>
-      </el-col>
+      
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -85,7 +54,7 @@
       <el-table-column label="处理金额" align="center" prop="financeAmount" />
       <el-table-column label="明细银行名称" align="center" prop="financeBankName" />
       <el-table-column label="明细银行账户" align="center" prop="financeBankAccount" />
-      <el-table-column label="明细银行户主名子" align="center" prop="financeBankOwner" />
+      <el-table-column label="提现银行户主名字" align="center" prop="financeBankOwner" />
       <el-table-column label="明细类型" align="center" prop="financeType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.msh_finance_type" :value="scope.row.financeType"/>
@@ -108,19 +77,20 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['finance:finance:edit']"
-          >修改</el-button>
+          >修改</el-button> -->
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['finance:finance:remove']"
+            disabled="true"
           >删除</el-button>
         </template>
       </el-table-column>
