@@ -42,6 +42,8 @@ public class MshFinanceController extends BaseController
     public TableDataInfo list(MshFinance mshFinance)
     {
         startPage();
+        Long userId = getUserId();
+
         List<MshFinance> list = mshFinanceService.selectMshFinanceList(mshFinance);
         return getDataTable(list);
     }

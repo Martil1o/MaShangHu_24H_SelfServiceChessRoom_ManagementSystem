@@ -2,7 +2,6 @@ package com.ruoyi.mshOrder.service;
 
 import java.util.List;
 import com.ruoyi.mshOrder.domain.MshOrder;
-import com.ruoyi.mshOrder.domain.Vo.MshOrderVo;
 
 /**
  * 订单明细Service接口
@@ -23,11 +22,12 @@ public interface IMshOrderService
     /**
      * 查询订单明细列表
      *
-     * @param mshOrder    订单明细
      * @param loginUserID
+     * @param mshOrder    订单明细
+     * @param userId
      * @return 订单明细集合
      */
-    public List<MshOrder> selectMshOrderList(MshOrder mshOrder);
+    public List<MshOrder> selectMshOrderList(MshOrder mshOrder, Long userId);
 
     /**
      * 新增订单明细

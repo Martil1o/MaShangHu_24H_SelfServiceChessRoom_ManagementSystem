@@ -2,7 +2,6 @@ package com.ruoyi.mshOrder.service.impl;
 
 import java.util.List;
 
-import com.ruoyi.mshOrder.domain.Vo.MshOrderVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.mshOrder.mapper.MshOrderMapper;
@@ -36,13 +35,14 @@ public class MshOrderServiceImpl implements IMshOrderService
     /**
      * 查询订单明细列表
      *
-     * @param mshOrder    订单明细
+     * @param mshOrder 订单明细
+     * @param userId
      * @return 订单明细
      */
     @Override
-    public List<MshOrder> selectMshOrderList(MshOrder mshOrder)
+    public List<MshOrder> selectMshOrderList(MshOrder mshOrder, Long userId)
     {
-        return mshOrderMapper.selectMshOrderList(mshOrder);
+        return mshOrderMapper.selectMshOrderList(mshOrder,userId);
     }
 
     /**
