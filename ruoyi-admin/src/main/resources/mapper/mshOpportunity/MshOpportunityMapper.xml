@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mshOpportunity.mapper.MshOpportunityMapper">
+    
+    <resultMap type="MshOpportunity" id="MshOpportunityResult">
+        <result property="id"    column="id"    />
+        <result property="opportunityDescription"    column="opportunity_description"    />
+        <result property="opportunityBudget"    column="opportunity_budget"    />
+        <result property="opportunityMaxMembers"    column="opportunity_max_members"    />
+        <result property="opportunityStatus"    column="opportunity_status"    />
+        <result property="opportunityEndTime"    column="opportunity_end_time"    />
+    </resultMap>
+
+    <sql id="selectMshOpportunityVo">
+        select id, opportunity_description, opportunity_budget, opportunity_max_members, opportunity_status, opportunity_end_time from msh_opportunity
+    </sql>
+
+    <select id="selectMshOpportunityList" parameterType="MshOpportunity" resultMap="MshOpportunityResult">
+        <include refid="selectMshOpportunityVo"/>
+        <where>  
+            <if test="opportunityStatus != null "> and opportunity_status = #{opportunityStatus}</if>
+            <if test="opportunityEndTime != null "> and opportunity_end_time = #{opportunityEndTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectMshOpportunityById" parameterType="Long" resultMap="MshOpportunityResult">
+        <include refid="selectMshOpportunityVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMshOpportunity" parameterType="MshOpportunity" useGeneratedKeys="true" keyProperty="id">
+        insert into msh_opportunity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="opportunityDescription != null and opportunityDescription != ''">opportunity_description,</if>
+            <if test="opportunityBudget != null">opportunity_budget,</if>
+            <if test="opportunityMaxMembers != null">opportunity_max_members,</if>
+            <if test="opportunityStatus != null">opportunity_status,</if>
+            <if test="opportunityEndTime != null">opportunity_end_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="opportunityDescription != null and opportunityDescription != ''">#{opportunityDescription},</if>
+            <if test="opportunityBudget != null">#{opportunityBudget},</if>
+            <if test="opportunityMaxMembers != null">#{opportunityMaxMembers},</if>
+            <if test="opportunityStatus != null">#{opportunityStatus},</if>
+            <if test="opportunityEndTime != null">#{opportunityEndTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMshOpportunity" parameterType="MshOpportunity">
+        update msh_opportunity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="opportunityDescription != null and opportunityDescription != ''">opportunity_description = #{opportunityDescription},</if>
+            <if test="opportunityBudget != null">opportunity_budget = #{opportunityBudget},</if>
+            <if test="opportunityMaxMembers != null">opportunity_max_members = #{opportunityMaxMembers},</if>
+            <if test="opportunityStatus != null">opportunity_status = #{opportunityStatus},</if>
+            <if test="opportunityEndTime != null">opportunity_end_time = #{opportunityEndTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMshOpportunityById" parameterType="Long">
+        delete from msh_opportunity where id = #{id}
+    </delete>
+
+    <delete id="deleteMshOpportunityByIds" parameterType="String">
+        delete from msh_opportunity where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
